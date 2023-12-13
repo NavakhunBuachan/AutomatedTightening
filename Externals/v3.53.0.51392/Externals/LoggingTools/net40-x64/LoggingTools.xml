@@ -1,0 +1,99 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+LoggingTools
+</name>
+</assembly>
+<members>
+<member name="T:NLog.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:NLog.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:NLog.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="T:NLog.NLog2Extensions">
+ <summary>
+ Extension methods for NLog 2.0 to be used by assemblies that conditionally reference NLog 4.5. Methods have the same signature as the newly added methods in NLog 4.5, but the contents call the deprecated methods as defined in NLog 2.0.  This allows new code to be written in a solution that references 4.5, but maintains backwards-compatibility for configurations that still reference the older libraries.
+ </summary>
+</member>
+<member name="M:NLog.NLog2Extensions.Debug(NLog.Logger,System.Exception,System.String)">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a message at the <see cref="F:NLog.LogLevel.Debug"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged</param>
+</member>
+<member name="M:NLog.NLog2Extensions.Debug(NLog.Logger,System.Exception,System.String,System.Object[])">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a formatted message at the <see cref="F:NLog.LogLevel.Debug"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged, with argument parameters</param>
+ <param name="args">Arguments to replace format items in the given <paramref name="message"/></param>
+</member>
+<member name="M:NLog.NLog2Extensions.Error(NLog.Logger,System.Exception,System.String)">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a message at the <see cref="F:NLog.LogLevel.Error"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged</param>
+</member>
+<member name="M:NLog.NLog2Extensions.Error(NLog.Logger,System.Exception,System.String,System.Object[])">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a formatted message at the <see cref="F:NLog.LogLevel.Error"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged, with argument parameters</param>
+ <param name="args">Arguments to replace format items in the given <paramref name="message"/></param>
+</member>
+<member name="M:NLog.NLog2Extensions.Info(NLog.Logger,System.Exception,System.String)">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a message at the <see cref="F:NLog.LogLevel.Info"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged</param>
+</member>
+<member name="M:NLog.NLog2Extensions.Info(NLog.Logger,System.Exception,System.String,System.Object[])">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a formatted message at the <see cref="F:NLog.LogLevel.Info"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged, with argument parameters</param>
+ <param name="args">Arguments to replace format items in the given <paramref name="message"/></param>
+</member>
+<member name="M:NLog.NLog2Extensions.Warn(NLog.Logger,System.Exception,System.String)">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a message at the <see cref="F:NLog.LogLevel.Warn"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged</param>
+</member>
+<member name="M:NLog.NLog2Extensions.Warn(NLog.Logger,System.Exception,System.String,System.Object[])">
+ <summary>
+ Extension method for <see cref="T:NLog.Logger"/> 2.0 to log a formatted message at the <see cref="F:NLog.LogLevel.Warn"/> level with an exception, using the syntax from NLog 4.5
+ </summary>
+ <param name="logger"><see cref="T:NLog.Logger"/></param>
+ <param name="ex"><see cref="T:System.Exception"/></param>
+ <param name="message">String message to be logged, with argument parameters</param>
+ <param name="args">Arguments to replace format items in the given <paramref name="message"/></param>
+</member>
+</members>
+</doc>

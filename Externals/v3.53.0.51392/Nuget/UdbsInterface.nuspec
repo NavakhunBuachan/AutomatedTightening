@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<package>
+  <!-- Generated from .vbproj file. -->
+  <!-- Tokens ($) are used to automatically update from the Assembly Information -->
+  <!-- For the exact mapping of project values to .nuspec tokens, see https://docs.microsoft.com/en-us/nuget/reference/nuspec#replacement-tokens. -->
+  <metadata>
+    <!-- The identifier that must be unique within the hosting gallery -->
+    <!-- This token is replaced with the AssemblyName value from the project file at packing time -->
+    <id>UdbsInterface</id>
+    <!-- The package version number that is used when resolving dependencies -->
+    <!-- AssemblyInformationalVersion if present, otherwise AssemblyVersion -->
+    <version>3.52.1.51299</version>
+    <!-- AssemblyInfo > AssemblyTitle -->
+    <title>UdbsInterface</title>
+    <!-- Authors contain text that appears directly on the gallery -->
+    <authors>Lumentum</authors>
+    <!-- Team managing the package updates and releases. -->
+    <owners>Software Applications and Automation, Transport BU, Lumentum.</owners>
+    <!-- Project URL provides a link for the gallery -->
+    <projectUrl>http://fractal.li.lumentuminc.net/fractal/articles/UdbsInterface/ReleaseNotes.html</projectUrl>
+    <!-- The icon is used in Visual Studio's package manager UI -->
+    <iconUrl>http://fractal.li.lumentuminc.net/Lumentum.png</iconUrl>
+    <!-- If true, this value prompts the user to accept the license when installing the package.  -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!-- Description used in Package Manager UI will come from $description$ property of AssemblyInfo file -->
+    <description>UDBS Interface definitions for MES and TestData</description>
+    <!-- Copyright information -->
+    <copyright>Copyright Lumentum 2020</copyright>
+    <!-- Tags appear in the gallery and can be used for tag searches -->
+    <tags>Fractal Lumentum Framework Automation Camstar MES UDBS</tags>
+    <dependencies>
+      <!--Framework group-->
+      <group targetFramework="net40">
+        <dependency id="LoggingTools" version="1.1.0.*" />
+        <dependency id="System.Data.SQLite.Core" version="1.0.112.*" />
+        <dependency id="ClosedXML.Signed" version="0.95.4.*" />
+      </group>
+      <!--Framework group-->
+      <group targetFramework="net462">
+        <dependency id="NLog" version="4.7.15.*" />
+        <dependency id="System.Data.SQLite.Core" version="1.0.112.*" />
+        <dependency id="NLog.Windows.Forms" version="4.6.0.*" />
+        <dependency id="ClosedXML.Signed" version="0.95.4.*" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Copy from officially released binaries -->
+    <file src="..\bin_version\net462-x64\**" target="runtimes\win-x64\lib\net462" exclude="**/NLog.*;" />
+    <file src="..\bin_version\net462-x86\**" target="runtimes\win-x86\lib\net462" exclude="**/NLog.*;" />
+    <file src="..\bin_version\net40-x64\**" target="runtimes\win-x64\lib\net40" exclude="**/NLog.*;**/LoggingTools.*;" />
+    <file src="..\bin_version\net40-x86\**" target="runtimes\win-x86\lib\net40" exclude="**/NLog.*;**/LoggingTools.*;" />
+    <!-- Props file to add (Enable if package has .props file) -->
+    <file src="*.props" target="build" />
+    <!-- Targets file to add (Enable if package has .tagets file) -->
+    <!--file src="*.targets" target="build"/-->
+  </files>
+</package>

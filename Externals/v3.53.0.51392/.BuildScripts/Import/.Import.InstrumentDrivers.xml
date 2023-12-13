@@ -1,0 +1,71 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+	<Choose>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\InstrumentDrivers')">
+			<ItemGroup>
+				<!-- Reference the project from source code in the solution -->
+				<ProjectReference Include="..\InstrumentDrivers\InstrumentDrivers.vbproj">
+					<Project>{72B02CF6-C312-4120-B307-1E3C61599980}</Project>
+					<Name>InstrumentDrivers</Name>
+				</ProjectReference>
+			</ItemGroup>
+		</When>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\InstrumentLibrary')">
+			<ItemGroup>
+				<!-- Use the external from the InstrumentLibrary project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>..\InstrumentLibrary\Externals\InstrumentDrivers\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<!-- Add new Test Station type projects here, if they use InstrumentDrivers  -->
+		<When Condition="Exists('Externals\DGTS_TestStation\')">
+			<ItemGroup>
+				<!-- Use the binary from the DGTS_TestStation external of the project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\DGTS_TestStation\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\VerTigo_TestStation\')">
+			<ItemGroup>
+				<!-- Use the binary from the VerTigo_TestStation external of the project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\VerTigo_TestStation\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\MUTeCS_TestStation\')">
+			<ItemGroup>
+				<!-- Use the binary from the MUTeCS_TestStation external of the project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\MUTeCS_TestStation\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\WATTS_TestStation\')">
+			<ItemGroup>
+				<!-- Use the binary from the WATTS_TestStation external of the project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\WATTS_TestStation\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\InstrumentLibrary\')">
+			<ItemGroup>
+				<!-- Use the binary from the InstrumentLibrary external of the project -->
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\InstrumentLibrary\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Reference Include="InstrumentDrivers">
+					<HintPath>Externals\InstrumentDrivers\$(BinSubfolder)\InstrumentDrivers.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+</Project>

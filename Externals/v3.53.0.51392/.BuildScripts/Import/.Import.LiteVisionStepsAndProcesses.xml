@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+	<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LiteVisionStepsAndProcesses')">
+	  <ItemGroup>
+		<ProjectReference Include="..\LiteVisionStepsAndProcesses\LiteVisionStepsAndProcesses.csproj">
+		  <Project>{6F215D5C-14FB-48A3-9144-295AC2F6FC62}</Project>
+		  <Name>LiteVisionStepsAndProcesses</Name>
+		</ProjectReference>
+	  </ItemGroup>
+	</When>
+	<Otherwise>
+	  <ItemGroup>
+		<Reference Include="LiteVisionStepsAndProcesses">
+		  <HintPath>Externals\LiteVisionStepsAndProcesses\$(BinSubfolder)\LiteVisionStepsAndProcesses.dll</HintPath>
+		</Reference>
+	  </ItemGroup>
+    </Otherwise>
+  </Choose>  
+</Project>

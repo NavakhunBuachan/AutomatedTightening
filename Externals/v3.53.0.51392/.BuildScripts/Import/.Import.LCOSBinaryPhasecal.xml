@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+	  <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LCOSBinaryPhasecal\LCOSBinaryPhasecal.csproj')">
+	    <ItemGroup>
+		    <ProjectReference Include="..\LCOSBinaryPhasecal\LCOSBinaryPhasecal.csproj">
+		      <Project>{E661434B-4A02-4574-81D6-16A72EE882C7}</Project>
+		      <Name>LCOSBinaryPhasecal</Name>
+		    </ProjectReference>  
+	    </ItemGroup>
+	  </When>
+	  <Otherwise>
+	    <ItemGroup>
+		    <Reference Include="LCOSBinaryPhasecal">
+		      <HintPath>Externals\LCOSBinaryPhasecal\LCOSBinaryPhasecal.dll</HintPath>
+		    </Reference>
+	    </ItemGroup>
+    </Otherwise>
+  </Choose>  
+</Project>

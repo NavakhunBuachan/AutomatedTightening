@@ -1,0 +1,65 @@
+<!--
+This file can be imported into any project to add a conditional project reference to Fractal, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.LiteJigHardware.xml" Condition="'$(ImportedLiteJigHardware)' != 'true'"/>
+
+Dependency tree (top-down): ? TODO
+
+Nested Dependencies: ? TODO
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+    <ImportedLiteJigHardware>true</ImportedLiteJigHardware>
+  </PropertyGroup>
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LiteJigHardware')">
+      <ItemGroup>
+        <!-- Reference the project from source code in the solution -->
+        <ProjectReference Include="..\LiteJigHardware\LiteJigHardware.vbproj">
+          <Project>{3d92bd7f-a2ca-4002-b7fc-33eecf9df0bb}</Project>
+          <Name>LiteJigHardware</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\DGTS_WaferMap\')">
+      <ItemGroup><!-- Use the binary from the DGTS_WaferMap external of the project -->
+        <Reference Include="LiteJigHardware">
+          <HintPath>Externals\DGTS_WaferMap\$(BinSubfolder)\LiteJigHardware.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <Choose>
+        <When Condition="Exists('Externals\ADIOS')">
+          <ItemGroup><!-- Use the binary from the DGTS_WaferMap external of the project -->
+            <Reference Include="LiteJigHardware">
+              <HintPath>Externals\ADIOS\$(BinSubfolder)\LiteJigHardware.exe</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
+        <Otherwise>
+          <ItemGroup>
+            <Reference Include="LiteJigHardware">
+              <HintPath>Externals\LiteJigHardware\$(BinSubfolder)\LiteJigHardware.exe</HintPath>
+            </Reference>
+          </ItemGroup>
+        </Otherwise>
+      </Choose>
+    </Otherwise>
+  </Choose>
+</Project>

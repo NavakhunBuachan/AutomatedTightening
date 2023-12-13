@@ -1,0 +1,108 @@
+<!--
+This file can be imported into any project to add a conditional project reference, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+	<Import Project=".BuildScripts\NuGet\MesTestData.Library.xml" />
+
+Dependency tree: FractalSteps - Fractal - MesTestData.Library
+
+Nested Dependencies: MesTestData.Interfaces , UdbsInterface , CamstarMes
+
+Selection priority:
+1. external source code, if source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<!-- Custom property to find the path of the external references for the project -->
+		<!-- Default to "unknown" for not found -->
+		<PathMesTestDataLibrary>unknown</PathMesTestDataLibrary>
+	</PropertyGroup>
+	<Choose>
+		<When Condition="'$(ReferenceSourceCode)' == 'true'">
+			<!-- Search Source Code: Look from bottom to top -->
+			<Choose>
+				<When Condition="Exists('..\MesTestData.Library\MesTestData.Library.vbproj')">
+					<ItemGroup>
+						<ProjectReference Include="..\MesTestData.Library\MesTestData.Library.vbproj">
+							<Project>{FBDB83C3-DA63-4D6E-A929-6E945C90C2DD}</Project>
+							<Name>MesTestData.Library</Name>
+						</ProjectReference>
+					</ItemGroup>
+					<!-- PathMesTestDataLibrary N/A when using project reference from source -->
+					<PropertyGroup>
+						<PathMesTestDataLibrary>na</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+				<!-- Fractal -->
+				<When Condition="Exists('..\Fractal\Externals\MesTestData.Library')">
+					<PropertyGroup>
+						<PathMesTestDataLibrary>..\Fractal\Externals\MesTestData.Library</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+				<!-- FractalSteps -->
+				<When Condition="Exists('..\FractalSteps\Externals\Fractal')">
+					<PropertyGroup>
+						<PathMesTestDataLibrary>..\FractalSteps\Externals\Fractal</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+			</Choose>
+		</When>
+	</Choose>
+	<Choose>
+		<!-- If path not found above, search External subfolders of project -->
+		<When Condition="'$(PathMesTestDataLibrary)' == 'unknown' And Exists('Externals')">
+			<!-- Will get here if either not referencing source code, or the source code above was not found -->
+			<!-- Look from top to bottom: FractalSteps - Fractal - MesTestData.Library -->
+			<Choose>
+				<When Condition="Exists('Externals\FractalSteps')">
+					<PropertyGroup>
+						<PathMesTestDataLibrary>Externals\FractalSteps</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+				<When Condition="Exists('Externals\Fractal')">
+					<PropertyGroup>
+						<PathMesTestDataLibrary>Externals\Fractal</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+				<When Condition="Exists('Externals\MesTestData.Library')">
+					<PropertyGroup>
+						<PathMesTestDataLibrary>Externals\MesTestData.Library</PathMesTestDataLibrary>
+					</PropertyGroup>
+				</When>
+			</Choose>
+		</When>
+	</Choose>
+	<!-- Add the external references, if path was found, else try the NuGet package reference -->
+	<Choose>
+		<When Condition="'$(PathMesTestDataLibrary)' == 'unknown'">
+			<!-- Not found: use NuGet Package from http://osatnugetserver.li.lumentuminc.net/nuget -->
+			<ItemGroup>
+				<PackageReference Include="MesTestData.Library"/>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<!-- Reference external path, if applicable. (N/A for project source reference above.) -->
+			<ItemGroup Condition="Exists('$(PathMesTestDataLibrary)')">
+				<Reference Include="MesTestData.Library">
+					<HintPath>$(PathMesTestDataLibrary)\$(BinSubfolder)\MesTestData.Library.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+	<ImportGroup Condition="'$(PathMesTestDataLibrary)' != 'unknown'">
+		<!-- Import nested dependencies -->
+		<Import Project="UdbsInterface.xml"/>
+		<Import Project="..\Import\.Import.SRMInterface.xml"/>
+		<Import Project="CamstarMes.xml"/>
+		<!-- MesTestData.Interfaces is referenced by both UdbsInterface and CamstarMes -->
+		<Import Project="MesTestData.Interfaces.xml"/>
+	</ImportGroup>
+</Project>

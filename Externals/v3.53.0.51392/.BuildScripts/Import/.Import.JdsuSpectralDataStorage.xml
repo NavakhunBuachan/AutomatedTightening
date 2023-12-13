@@ -1,0 +1,37 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+	<Choose>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\JdsuSpectralDataStorage\JdsuSpectralDataStorage.vbproj')">
+			<ItemGroup>
+				<ProjectReference Include="..\JdsuSpectralDataStorage\JdsuSpectralDataStorage.vbproj">
+					<Project>{F3320A49-4124-44E0-8DD2-522F904A9DC8}</Project>
+					<Name>JdsuSpectralDataStorage</Name>
+				</ProjectReference>
+			</ItemGroup>
+		</When>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\JdsuOpticalTestStation')">
+			<ItemGroup>
+				<!-- Use the external from the JdsuOpticalTestStation project -->
+				<Reference Include="JdsuSpectralDataStorage">
+					<HintPath>..\JdsuOpticalTestStation\Externals\JdsuSpectralDataStorage\$(BinSubfolder)\JdsuSpectralDataStorage.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\JdsuOpticalTestStation')">
+			<ItemGroup>
+				<!-- Use binary reference from the JdsuOpticalTestStation External -->
+				<Reference Include="JdsuSpectralDataStorage">
+					<HintPath>Externals\JdsuOpticalTestStation\$(BinSubfolder)\JdsuSpectralDataStorage.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Reference Include="JdsuSpectralDataStorage">
+					<HintPath>Externals\JdsuSpectralDataStorage\$(BinSubfolder)\JdsuSpectralDataStorage.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+</Project>

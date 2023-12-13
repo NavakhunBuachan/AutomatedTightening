@@ -1,0 +1,114 @@
+<!--
+This file can be imported into any project to add a conditional project reference, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.FractalDataLibrary.xml" Condition="'$(ImportedFractalDataLibrary)' != 'true'" />
+
+Dependency tree (top-down): FractalSteps - Fractal - FACE / FractalHardwareSupport - FractalDataLibrary
+
+Nested Dependencies: MathNet.Numerics, FractalControlLibrary 
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+  <PropertyGroup>
+    <ImportedFractalDataLibrary>true</ImportedFractalDataLibrary>
+  </PropertyGroup>
+  <Choose>
+    <!-- Note:  If more than one When element evaluates to true, only the first one is used -->
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\FractalDataLibrary')">
+      <ItemGroup>
+        <!-- Use the project source code -->
+        <ProjectReference Include="..\FractalDataLibrary\FractalDataLibrary.vbproj">
+          <Project>{d9948bdb-a7ac-45fb-a505-0b99a48bcb7c}</Project>
+          <Name>FractalDataLibrary</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\Face')">
+      <ItemGroup>
+        <!-- Use the binary from the FractalDataLibrary project output -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>..\Face\Externals\FractalDataLibrary\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\FractalHardwareSupport')">
+      <ItemGroup>
+        <!-- Use the binary from the FractalDataLibrary project output -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>..\FractalHardwareSupport\Externals\FractalDataLibrary\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\Fractal')">
+      <ItemGroup>
+        <!-- Use the binary from the Face external of Fractal -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>..\Fractal\Externals\Face\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\FractalSteps')">
+      <ItemGroup>
+        <!-- Use the binary from the Fractal external of FractalSteps -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>..\FractalSteps\Externals\Fractal\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\FractalSteps\')">
+      <ItemGroup>
+        <!-- Use the binary from the FractalSteps external of the project -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>Externals\FractalSteps\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\Fractal')">
+      <ItemGroup>
+        <!-- Use the binary from the Fractal External -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>Externals\Fractal\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\Face')">
+      <ItemGroup>
+        <!-- Use the binary from the Face External -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>Externals\Face\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\FractalHardwareSupport')">
+      <ItemGroup>
+        <!-- Use the binary from the FractalHardwareSupport External -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>Externals\FractalHardwareSupport\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <!-- Use the binary from the FractalDataLibrary External -->
+        <Reference Include="FractalDataLibrary">
+          <HintPath>Externals\FractalDataLibrary\$(BinSubfolder)\FractalDataLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <!-- Import nested dependencies, if not already imported -->
+  <Import Project=".Import.FractalControlLibrary.xml" Condition="'$(ImportedFractalControlLibrary)' != 'true'"/>
+  <Import Project="..\NuGet\MathNet.Numerics.xml" Condition="'$(ImportedMathNetNumerics)' != 'true'"/>
+</Project>

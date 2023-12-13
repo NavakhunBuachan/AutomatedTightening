@@ -1,0 +1,22 @@
+<!-- 
+This file can be imported into any project to add a NuGet reference to StyleCop,
+with the version based on the .NET Framework.
+
+By using a shared file, all projects are guaranteed to reference the same version, 
+and if we want to upgrade, only one file needs to be updated.
+
+Example usage:
+
+  <ImportGroup>
+	<Import Project=".BuildScripts\NuGet\StyleCop.xml" />
+  </ImportGroup>
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- For latest stable version (no restrictions), can change to Version="[*,9999.0]" -->
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

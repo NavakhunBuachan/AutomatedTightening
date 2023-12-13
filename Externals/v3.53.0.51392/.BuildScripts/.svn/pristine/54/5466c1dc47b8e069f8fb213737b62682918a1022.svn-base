@@ -1,0 +1,62 @@
+<!--
+This file can be imported into any project to add a conditional project reference to SpectralAnalysis, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.SpectralAnalysis.xml" Condition="'$(ImportedSpectralAnalysis)' != 'true'"/>
+
+Dependency tree (top-down): 
+
+Nested Dependencies: 
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+    <ImportedSpectralAnalysis>true</ImportedSpectralAnalysis>
+  </PropertyGroup>
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\SpectralAnalysis\SpectralAnalysis.vbproj')">
+      <ItemGroup>
+        <ProjectReference Include="..\SpectralAnalysis\SpectralAnalysis.vbproj">
+          <Project>{98A6B486-D688-4850-BB41-524D94906B5F}</Project>
+          <Name>SpectralAnalysis</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\JdsuMeasurementStepsAndProcesses')">
+      <ItemGroup>
+        <!-- Use the external from the JdsuMeasurementStepsAndProcesses project -->
+        <Reference Include="SpectralAnalysis">
+          <HintPath>..\JdsuMeasurementStepsAndProcesses\Externals\SpectralAnalysis\$(BinSubfolder)\SpectralAnalysis.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\JdsuMeasurementStepsAndProcesses')">
+      <ItemGroup>
+        <!-- Use binary reference from the JdsuMeasurementStepsAndProcesses External -->
+        <Reference Include="SpectralAnalysis">
+          <HintPath>Externals\JdsuMeasurementStepsAndProcesses\$(BinSubfolder)\SpectralAnalysis.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="SpectralAnalysis">
+          <HintPath>Externals\SpectralAnalysis\$(BinSubfolder)\SpectralAnalysis.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

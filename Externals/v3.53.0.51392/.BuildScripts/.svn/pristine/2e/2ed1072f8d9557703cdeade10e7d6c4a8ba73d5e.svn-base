@@ -1,0 +1,102 @@
+<!-- 
+This file can be imported into any project to add a NuGet reference to NLog,
+with the version based on the .NET Framework.
+
+By using a shared file, all projects are guaranteed to reference the same version, 
+and if we want to upgrade, only one file needs to be updated.
+
+Example usage:
+  <ImportGroup>
+	<Import Project=".BuildScripts\NuGet\NLog.xml" />
+  </ImportGroup>
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Custom property to find the path of the external references for the project -->
+    <!-- Default to "unknown" for not found -->
+    <PathNLog>unknown</PathNLog>
+  </PropertyGroup>
+  <Choose>
+    <!-- Choose the NLog reference based on the .NET Framework  -->
+    <When Condition=" '$(FrameworkConfiguration)' == 'net40' ">
+	  <!-- 
+	   Use NLog 2.0 for .NET 4.0, with LoggingTools external to allow use of NLog 4.0 Error logging syntax 
+	   Requires the following external to be included for the project:
+	   ^/VB.NET/Libraries/LoggingTools/trunk/bin_version Externals/LoggingTools  
+
+       Note that we could use the 2.0 version from NuGet, but VS2010 does not support PackageReference elements
+       Assuming that if we are targetting .NET 4.0, then we are using VS2010, 
+       so add NLog reference the traditional way, through the LoggingTools external
+      -->	
+
+      <Choose>
+        <When Condition="Exists('Externals\JdsuUdbsLibrary')">
+          <PropertyGroup>
+            <PathNLog>Externals\JdsuUdbsLibrary</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\MesTestData.Library')">
+          <PropertyGroup>
+            <PathNLog>Externals\MesTestData.Library</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\UdbsInterface')">
+          <PropertyGroup>
+            <PathNLog>Externals\UdbsInterface</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\MesTestData.Interfaces')">
+          <PropertyGroup>
+            <PathNLog>Externals\MesTestData.Interfaces</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\SRMInterface')">
+          <PropertyGroup>
+            <PathNLog>Externals\SRMInterface</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\JdsuFiles')">
+          <PropertyGroup>
+            <PathNLog>Externals\JdsuFiles</PathNLog>
+          </PropertyGroup>
+        </When>
+        <When Condition="Exists('Externals\LoggingTools')">
+          <PropertyGroup>
+            <PathNLog>Externals\LoggingTools</PathNLog>
+          </PropertyGroup>
+        </When>
+      </Choose>
+
+      <!-- Add the external references, if path was found, else try the NuGet package reference -->
+      <Choose>
+        <When Condition="'$(PathNLog)' == 'unknown'">
+          <!-- Not found: use NuGet Package. Although we know it's not going to be compatible... -->
+          <ItemGroup>
+            <Reference Include="NLog"/>
+            <Reference Include="LoggingTools"/>
+          </ItemGroup>
+        </When>
+        <Otherwise>
+          <ItemGroup Condition="Exists('$(PathNLog)')">
+            <Reference Include="NLog">
+              <HintPath>$(PathNLog)\$(BinSubfolder)\NLog.dll</HintPath>
+            </Reference>
+            <Reference Include="LoggingTools">
+              <HintPath>$(PathNLog)\$(BinSubfolder)\LoggingTools.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </Otherwise>
+      </Choose>
+    </When>
+    <Otherwise>
+	  <!-- Use latest version in major version 4 of NLog (in case of breaking change in version 5) -->
+	  <!-- For latest stable version (no restrictions), can change to Version="[*,9999.0]" -->
+	  <ItemGroup>
+	    <!-- Do not use inline Version attribute for PackageReference, since VS2010 does not support it -->
+	    <PackageReference Include="NLog">
+		  <Version>4.*</Version>
+		</PackageReference>
+	  </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

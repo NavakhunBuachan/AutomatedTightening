@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+	<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LumentumFlexOcmDeviceControl')">
+	  <ItemGroup>
+		<ProjectReference Include="..\LumentumFlexOcmDeviceControl\LumentumFlexOcmDeviceControl.vbproj">
+		  <Project>{32A4205B-4A4D-43E4-98D5-771EE43EF386}</Project>
+		  <Name>LumentumFlexOcmDeviceControl</Name>
+		</ProjectReference>
+	  </ItemGroup>
+	</When>
+	<Otherwise>
+	  <ItemGroup>
+		<Reference Include="LumentumFlexOcmDeviceControl">
+		  <HintPath>Externals\LumentumFlexOcmDeviceControl\$(BinSubfolder)\LumentumFlexOcmDeviceControl.dll</HintPath>
+		</Reference>
+	  </ItemGroup>
+    </Otherwise>
+  </Choose>  
+</Project>

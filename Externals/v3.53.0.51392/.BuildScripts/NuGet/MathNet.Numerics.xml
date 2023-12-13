@@ -1,0 +1,32 @@
+<!-- 
+This file can be imported into any project to add a NuGet reference to MathNet.Numerics.
+
+By using a shared file, all projects are guaranteed to reference the same version, 
+and if we want to upgrade, only one file needs to be updated.
+
+Example usage:
+  <ImportGroup>
+	<Import Project=".BuildScripts\NuGet\MathNetNumerics.xml" />
+  </ImportGroup>
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Choose>
+    <!-- Choose the NLog reference based on the .NET Framework  -->
+    <When Condition=" '$(FrameworkConfiguration)' == 'net40' ">
+      <!-- Use 3.2.0 for .NET 4.0 -->
+      <ItemGroup>
+        <PackageReference Include="MathNet.Numerics">
+			<Version>3.2.0</Version>
+		</PackageReference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <!-- Use signed version for .net 462" -->
+      <ItemGroup>
+        <PackageReference Include="MathNet.Numerics.Signed">
+          <Version>4.7.0</Version>
+        </PackageReference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>  
+</Project>

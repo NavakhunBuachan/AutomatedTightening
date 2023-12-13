@@ -1,0 +1,41 @@
+<!--
+This file can be imported into any project to add a conditional project reference to Fractal, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.ADIOS.xml" Condition="'$(ImportedADIOS)' != 'true'"/>
+
+Dependency tree (top-down): ? TODO
+
+Nested Dependencies: ? TODO
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\MUTeCS_TestStation')">
+      <ItemGroup>
+		<ProjectReference Include="..\MUTeCS_TestStation\MUTeCS_TestStation.vbproj">
+		  <Project>{E6CF9DAB-21C1-4038-9EB2-0DF2CABB0CA5}</Project>
+		  <Name>MUTeCS_TestStation</Name>
+		</ProjectReference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+		<Reference Include="MUTeCS_TestStation">
+		  <HintPath>Externals\MUTeCS_TestStation\$(BinSubfolder)\MUTeCS_TestStation.exe</HintPath>
+		</Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

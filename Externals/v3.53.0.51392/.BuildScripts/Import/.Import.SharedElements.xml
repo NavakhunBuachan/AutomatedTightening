@@ -1,0 +1,20 @@
+<!-- 
+This file can be imported into any project to add common XML project elements 
+that are shared by all assemblies using the Fractal build conventions.
+
+Example usage (update path relative to file containing the Import node):
+  <Import Project=".BuildScripts\Import\.Import.SharedElements.xml" />
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Common properties for all projects that reference Fractal -->
+  <PropertyGroup>
+    <!-- Use the same signature on all assemblies -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>.BuildScripts\Fractal.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <!-- Import shared dependencies -->
+  <Import Project="..\NuGet\NLog.xml" Condition="'$(ImportedNLog)' != 'true'" />
+  <ImportGroup Condition="'$(FrameworkConfiguration)' != 'net40' And '$(ImportedNLogWindowsForms)' != 'true'">
+    <Import Project="..\NuGet\NLog.Windows.Forms.xml"/>
+  </ImportGroup>
+</Project>

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="JanomeIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.200.180</Value>
+    </Setting>
+    <Setting Name="JanomePort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10030</Value>
+    </Setting>
+    <Setting Name="SmartScrewPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">COM3</Value>
+    </Setting>
+    <Setting Name="SmartScrewRate" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">38400</Value>
+    </Setting>
+    <Setting Name="NavaMesServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://patappmesprd03h.li.lumentuminc.net:125/CamInterfaceSvc.svc</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

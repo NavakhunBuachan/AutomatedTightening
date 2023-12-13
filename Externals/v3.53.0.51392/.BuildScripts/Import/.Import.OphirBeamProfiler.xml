@@ -1,0 +1,63 @@
+<!--
+This file can be imported into any project to add a conditional project reference to OphirBeamProfiler, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.OphirBeamProfiler.xml" Condition="'$(ImportedOphirBeamProfiler)' != 'true'"/>
+
+Dependency tree (top-down): ? TODO
+
+Nested Dependencies: ? TODO
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+    <ImportedOphirBeamProfiler>true</ImportedOphirBeamProfiler>
+  </PropertyGroup>
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\OphirBeamProfiler\OphirBeamProfiler.vbproj')">
+      <ItemGroup>
+        <ProjectReference Include="..\OphirBeamProfiler\OphirBeamProfiler.vbproj">
+          <Project>{ad6b6800-906d-44f4-b0c1-1e22140124a8}</Project>
+          <Name>OphirBeamProfiler</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\FractalBeamProfileSteps')">
+      <ItemGroup>
+        <Reference Include="OphirBeamProfiler">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>..\FractalBeamProfileSteps\Externals\OphirBeamProfiler\$(BinSubfolder)\OphirBeamProfiler.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\FractalBeamProfileSteps')">
+      <ItemGroup>
+        <Reference Include="OphirBeamProfiler">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\FractalBeamProfileSteps\$(BinSubfolder)\OphirBeamProfiler.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="OphirBeamProfiler">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\OphirBeamProfiler\$(BinSubfolder)\OphirBeamProfiler.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

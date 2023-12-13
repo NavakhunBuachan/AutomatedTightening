@@ -1,0 +1,32 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Choose>
+    <!-- Note:  If more than one When element evaluates to true, only the first one is used -->
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LiteStmClient')">
+      <ItemGroup>
+        <!-- Use the project source code -->
+        <ProjectReference Include="..\LiteStmClient\LiteStmClient.vbproj">
+          <Project>{1aab07a3-3d40-4b64-9272-d342bfd33de0}</Project>
+          <Name>LiteStmClient</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\LiteRealTimeAligner\')">
+      <ItemGroup>
+        <!-- Use the binary from the LiteRealTimeAligner external of the project -->
+        <Reference Include="LiteStmClient">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\LiteRealTimeAligner\$(BinSubfolder)\LiteStmClient.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <!-- Use the binary from the External -->
+        <Reference Include="LiteStmClient">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\LiteStmClient\$(BinSubfolder)\LiteStmClient.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

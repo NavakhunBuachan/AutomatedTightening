@@ -1,0 +1,88 @@
+<!--
+This file can be imported into any project to add a conditional project reference, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.Face.xml" Condition="'$(ImportedFace)' != 'true'"/>
+
+Dependency tree (top-down): FractalSteps - Fractal - Face
+
+Nested Dependencies:  ApplicationBase, FractalDataLibrary
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+    <ImportedFace>true</ImportedFace>
+  </PropertyGroup>
+  <!--Reference source code, if it exists, and the configuration is -source; 
+	Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\Face\FACE.vbproj')">
+      <ItemGroup>
+        <ProjectReference Include="..\Face\FACE.vbproj">
+          <Project>{ed12de8d-d3f8-47c6-8278-4769f950d14a}</Project>
+          <Name>FACE</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\Fractal')">
+      <ItemGroup>
+        <!--Use the binary output from the Fractal project -->
+        <Reference Include="FACE">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>..\Fractal\Externals\Face\$(BinSubfolder)\FACE.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\FractalSteps')">
+      <ItemGroup>
+        <!--Use the binary output from the Fractal external of the FractalSteps project -->
+        <Reference Include="FACE">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>..\FractalSteps\Externals\Fractal\$(BinSubfolder)\FACE.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\FractalSteps\')">
+      <ItemGroup>
+        <!--Use the binary from the FractalSteps external of the project -->
+        <Reference Include="FACE">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\FractalSteps\$(BinSubfolder)\FACE.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\Fractal\')">
+      <ItemGroup>
+        <!--Use the binary from the Fractal external of the project -->
+        <Reference Include="FACE">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\Fractal\$(BinSubfolder)\FACE.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="FACE">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\Face\$(BinSubfolder)\FACE.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <!-- Import nested dependencies -->
+  <ImportGroup>
+    <Import Project=".Import.ApplicationBase.xml" Condition="'$(ImportedApplicationBase)' != 'true'"/>
+    <Import Project=".Import.FractalDataLibrary.xml" Condition="'$(ImportedFractalDataLibrary)' != 'true'"/>
+  </ImportGroup>
+</Project>

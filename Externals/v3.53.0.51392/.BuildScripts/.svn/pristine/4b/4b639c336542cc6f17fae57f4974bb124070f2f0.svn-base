@@ -1,0 +1,38 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+	<Choose>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\LumentumSignalLight')">
+			<ItemGroup>
+				<ProjectReference Include="..\LumentumSignalLight\LumentumSignalLight.vbproj">
+					<Project>{8e2b009b-b1c5-4f83-8a32-6acbbba093e1}</Project>
+					<Name>LumentumSignalLight</Name>
+				</ProjectReference>
+			</ItemGroup>
+		</When>
+		<When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\Fractal')">
+			<ItemGroup>
+				<!-- Use the binary output from the Fractal project -->
+				<Reference Include="LumentumSignalLight">
+					<HintPath>..\Fractal\Externals\LumentumSignalLight\$(BinSubfolder)\LumentumSignalLight.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition="Exists('Externals\Fractal\')">
+			<ItemGroup>
+				<!-- Use the binary from the Fractal external of the project -->
+				<Reference Include="LumentumSignalLight">
+					<HintPath>Externals\Fractal\$(BinSubfolder)\LumentumSignalLight.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<!-- Use the binary from the external of this project -->
+				<Reference Include="LumentumSignalLight">
+					<HintPath>Externals\LumentumSignalLight\$(BinSubfolder)\LumentumSignalLight.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+</Project>

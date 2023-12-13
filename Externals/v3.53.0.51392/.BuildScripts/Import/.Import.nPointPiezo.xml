@@ -1,0 +1,23 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Choose>
+    <!-- Note:  If more than one When element evaluates to true, only the first one is used -->
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\nPointPiezo')">
+      <ItemGroup>
+        <!-- Use the project source code -->
+        <ProjectReference Include="..\nPointPiezo\nPointPiezo.vbproj">
+          <Project>{016EE1C1-8158-473D-8281-106784E97338}</Project>
+          <Name>nPointPiezo</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <!-- Use the binary from the External -->
+        <Reference Include="nPointPiezo">
+          <ExecutableExtension>.exe</ExecutableExtension>
+          <HintPath>Externals\nPointPiezo\$(BinSubfolder)\nPointPiezo.exe</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

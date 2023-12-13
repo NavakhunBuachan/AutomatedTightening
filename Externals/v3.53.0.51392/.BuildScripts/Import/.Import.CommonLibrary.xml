@@ -1,0 +1,79 @@
+<!--
+This file can be imported into any project to add a conditional project reference to Fractal, 
+with the build configuration based on the .NET Framework and platform.
+
+Example usage (update path relative to file containing the Import node):
+ <Import Project=".BuildScripts\Import\Import.CommonLibrary.xml" Condition="'$(ImportedCommonLibrary)' != 'true'"/>
+
+Dependency tree (top-down): JdsuOpticalTestStation / JdsuElectricalTestStation
+
+Nested Dependencies: TODO
+
+Selection priority:
+1. external source code, if '$(ReferenceSourceCode)' == 'true' AND source code exists
+2. external binary, if exists. 
+   - If $(ReferenceSourceCode), search bottom up; 
+   - If not $(ReferenceSourceCode) or not found, search top-down in Externals of project
+3. (TODO) internal NuGet server, hosted at http://osatnugetserver.li.lumentuminc.net/nuget 
+
+By using a shared file, all projects are guaranteed to reference the same version,
+and if we want to upgrade, only one file needs to be updated.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Set Imported = true, to use as a condition to prevent multiple nested imports -->
+    <ImportedCommonLibrary>true</ImportedCommonLibrary>
+  </PropertyGroup>
+  <!-- Reference source code, if it exists, and the configuration is -source; 
+  Otherwise, reference External binary files -->
+  <Choose>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\CommonLibrary\CommonLibrary.vbproj')">
+      <ItemGroup>
+        <ProjectReference Include="..\CommonLibrary\CommonLibrary.vbproj">
+          <Project>{72B02CF6-C312-4120-B307-1E3C61599980}</Project>
+          <Name>CommonLibrary</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\JdsuOpticalTestStation\Externals\CommonLibrary')">
+      <!-- If JdsuOpticalTestStation is an external of this project, and referencing source, use the external from the JdsuOpticalTestStation project -->
+      <ItemGroup>
+        <Reference Include="CommonLibrary">
+          <HintPath>..\JdsuOpticalTestStation\Externals\CommonLibrary\$(BinSubfolder)\CommonLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(ReferenceSourceCode)' == 'true' And Exists('..\JdsuElectricalTestStation\Externals\CommonLibrary')">
+      <!-- If JdsuElectricalTestStation is an external of this project, and referencing source, use the external from the JdsuElectricalTestStation project -->
+      <ItemGroup>
+        <Reference Include="CommonLibrary">
+          <HintPath>..\JdsuElectricalTestStation\Externals\CommonLibrary\$(BinSubfolder)\CommonLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\JdsuOpticalTestStation')">
+      <!-- Use the binary from the JdsuOpticalTestStation external of the project -->
+      <ItemGroup>
+        <Reference Include="CommonLibrary">
+          <HintPath>Externals\JdsuOpticalTestStation\$(BinSubfolder)\CommonLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="Exists('Externals\JdsuElectricalTestStation')">
+      <!-- Use the binary from the JdsuElectricalTestStation external of the project -->
+      <ItemGroup>
+        <Reference Include="CommonLibrary">
+          <HintPath>Externals\JdsuElectricalTestStation\$(BinSubfolder)\CommonLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <!-- Use the reference directly from the CommonLibrary external -->
+      <ItemGroup>
+        <Reference Include="CommonLibrary">
+          <HintPath>Externals\CommonLibrary\$(BinSubfolder)\CommonLibrary.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>
