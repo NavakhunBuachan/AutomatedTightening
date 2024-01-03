@@ -122,13 +122,13 @@ Public Class testDataMES
             'testBuilder.SetSpec(specInstance)
             ''testBuilder.SetMes(mesInstance)
 
-
             'testBuilder.DoCreateMissingUnit(True)
             'logger.Info("<=Unit Creating")
 
             Return False
         End If
 
+        'Dim dt As DataTable = iMesBuild.GetUnitsAtWipStep("final_test")
         ' unitDetails = New Dictionary(Of String, String) From {{"", ""}}
 
         'Dim snFound As Boolean = WipTools.LookupSerialNo(

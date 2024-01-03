@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+InstallPath="C:\\temp\\PythonEnv\\WSSAutomation\\"
+RunProgram=" "
+GUIMode="2"
+;!@InstallEnd@!

@@ -70,7 +70,10 @@ Public Class janomeMachine
         readSysIO()
         readGenIo()
 
-        If genInStatus(2) = 1 And sysOutStatus(0) = 1 Then
+        ' genInStatus 2, 3  = XY Spring sensors
+        ' sysOutStatus 0  = ready signal
+        ' sysOutStatus 12  = Clamped
+        If genInStatus(2) = 1 And genInStatus(3) And sysOutStatus(12) = 1 And sysOutStatus(0) = 1 Then
             'ready signal from janome
             Return True
         End If
@@ -93,8 +96,6 @@ Public Class janomeMachine
     '    Loop
 
     'End Function
-
-
     Function startJob() As Boolean
 
         Try

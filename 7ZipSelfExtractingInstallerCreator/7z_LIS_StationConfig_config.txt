@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+InstallPath="C:\\JDSU\\JdsuLCOSInspectionStation\\JdsuCamera\\Configuration\\"
+RunProgram=" "
+GUIMode="2"
+;!@InstallEnd@!

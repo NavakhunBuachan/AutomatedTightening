@@ -179,6 +179,11 @@ Public Class mainForm
     Function finishTest() As Boolean
         logger.Info("==> Finish")
 
+
+        logger.Info("Store File:" + strSnLogName)
+        Dim testResult As UdbsInterface.TestDataInterface.CTestData_Result = testData.TestInst.Results("screw_1")
+        testResult.StoreFile("LogFile", "GroupName", False, strSnLogName)
+
         If Not storeTestData() Then
             Return False
         End If
@@ -186,7 +191,9 @@ Public Class mainForm
         Dim rc As UdbsInterface.TestDataInterface.ResultCodes
         Dim strRouting As String = ""
         guiReset()
+
         rc = testData.TestInst.EvaluateDevice()
+
         If rc = UdbsInterface.TestDataInterface.ResultCodes.UDBS_SPECS_PASS Then
             strRouting = testData.passRouting
             testData.FinishTest("")
@@ -202,7 +209,7 @@ Public Class mainForm
             finishTest = False
             logger.Info("Fail")
         End If
-
+        testResult.Dispose()
         logger.Info("<== Finish")
     End Function
     'Private Sub btnFin_Click(sender As Object, e As EventArgs) Handles btnFin.Click
@@ -301,10 +308,6 @@ Public Class mainForm
                 Return False
             End If
         Next
-
-        Dim testResult As UdbsInterface.TestDataInterface.CTestData_Result = testData.TestInst.Results("screw_1")
-
-        testResult.StoreFile("LogFile", "GroupName", False, strSnLogName)
 
         'testData.TestInst.st
         logger.Info("<== StoreData")
@@ -479,7 +482,7 @@ Public Class mainForm
 
         Dim config As NLog.Config.LoggingConfiguration = NLog.LogManager.Configuration
 
-        strSnLogName = "C:\ProgramData\AutomatedScrew\" + strUdbsPn + "_" + strSn + "_" + strMesWipName + "_" + CStr(testData.calTestSeqByWipStage) + ".csv"
+        strSnLogName = "C:\ProgramData\AutomatedTightening\" + strUdbsPn + "_" + strSn + "_" + strMesWipName + "_" + CStr(testData.calTestSeqByWipStage) + ".csv"
         logger.Info(strSnLogName)
         For Each target As NLog.Targets.FileTarget In config.AllTargets
 
@@ -706,8 +709,8 @@ Public Class mainForm
 
         ''testData2.StoreFile()
 
-        'If Not testData.initial("XCNE234ZTE001333-B", "BUA66577", System.Net.Dns.GetHostName) Then
-        If Not testData.initial("SWTEST02", "BUA66577", System.Net.Dns.GetHostName) Then
+        If Not testData.initial("XLNE234ZTE002231-B", "BUA66577", System.Net.Dns.GetHostName) Then
+            'If Not testData.initial("SWTEST02", "BUA66577", System.Net.Dns.GetHostName) Then
             testData.dispose()
             'Return False
         End If
@@ -717,11 +720,11 @@ Public Class mainForm
             guiReset()
             Return
         End If
-        'testData.FinishTest("")
+        ' testData.FinishTest("")
         'testData.ime
         Dim testResult As UdbsInterface.TestDataInterface.CTestData_Result = testData.TestInst.Results("screw_1")
-        'testResult.ItemName
-        temp = My.Application.Info.DirectoryPath
+        ''testResult.ItemName
+        'temp = My.Application.Info.DirectoryPath
         testResult.StoreFile("testdata_TRHUA20864-B_mt_insp_1.txt", "GroupName", False, "C:\testdata_TRHUA20864-B_mt_insp_1.txt")
         testData.FinishTest("")
         temp = ""

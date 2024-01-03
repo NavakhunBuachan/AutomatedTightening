@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+InstallPath="C:\\Program Files\\Lumentum\\"
+RunProgram=" "
+GUIMode="2"
+;!@InstallEnd@!
