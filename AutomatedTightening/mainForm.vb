@@ -53,6 +53,7 @@ Public Class mainForm
         If checkTbInput() Then
             strSn = tbSn.Text
             strEn = tbEn.Text
+            logger.Info("User Input : " & strSn)
 
             If Not testData.initial(strSn, strEn, System.Net.Dns.GetHostName) Then
                 testData.dispose()
@@ -182,7 +183,9 @@ Public Class mainForm
 
         logger.Info("Store File:" + strSnLogName)
         Dim testResult As UdbsInterface.TestDataInterface.CTestData_Result = testData.TestInst.Results("screw_1")
-        testResult.StoreFile("LogFile", "GroupName", False, strSnLogName)
+
+        Dim storeResult As UdbsInterface.MasterInterface.ReturnCodes = testResult.StoreFile("LogFile", "GroupName", False, strSnLogName)
+        logger.Info("Store File result :" + CStr(storeResult))
 
         If Not storeTestData() Then
             Return False
@@ -358,84 +361,93 @@ Public Class mainForm
         Dim picindex As Integer = 0
         Dim resultScrew As Boolean = False
 
-        For i = 0 To countLoop - 1
+        Try
 
-            'picindex = Math.Floor((i + 1) / 2)
 
-            Dim stopwatch As New Stopwatch()
-            stopwatch.Start()
-            recvData = False
-            PictureBox1.Image = Image.FromFile(picPassed(picindex))
-            PictureBox1.Refresh()
+            For i = 0 To countLoop - 1
 
-            Do While stopwatch.ElapsedMilliseconds < timeLimit
+                'picindex = Math.Floor((i + 1) / 2)
 
-                Threading.Thread.Sleep(1000)
-                janome.readSysIO()
-                'janome.getStatus()
-                response = screw.sendAndRecv("02 4D 31 45 03")
-
-                If response.Length > 10 Then
-
-                    recvData = True
-                    returnPacket = screw.recvSmartScrewData(response)
-                    returnPacketScrew = returnPacket
-                    currentTime = DateTime.Now.TimeOfDay
-
-                    screw.dtResult.Rows.Add(i, currentTime, returnPacket(0), returnPacket(1), returnPacket(2), returnPacket(3), returnPacket(4),
-                                returnPacket(5), returnPacket(6), returnPacket(7), returnPacket(8), returnPacket(9), returnPacket(10),
-                                returnPacket(11))
-                    timestampLog("SmartScrew " + Str(i), True)
-                    logger.Trace("Count = " + CStr(screw.dtResult.Rows.Count))
-                    If screw.dtResult.Rows.Count Mod 2 = 1 Then 'screw feeding
-                        logger.Trace("Feeding")
-                        logger.Trace(returnPacket(8))
-                        If returnPacket(8) = "000" Then 'No error
-                            resultScrew = True
-                        Else
-                            logger.Trace("Screw feeding Error")
-                            resultScrew = False
-                        End If
-                    ElseIf screw.dtResult.Rows.Count Mod 2 = 0 Then 'screwing
-                        logger.Trace("Screwing")
-                        picindex = picindex + 1
-                        If returnPacket(11) = 1 Then 'Status is good for screwing
-                            resultScrew = True
-                        Else
-                            logger.Trace("Screwing result failed")
-                            resultScrew = False
-                        End If
-
-                    End If
-
-                    logger.Info("Picindex =" & picindex)
-                    PictureBox1.Image = Image.FromFile(picPassed(picindex))
-                    PictureBox1.Refresh()
-
-                    Exit Do
-                Else
-                    logger.Trace("Cannot receive Data in small loop")
-                    recvData = False
-                End If
-                logger.Info("Picindex =" & picindex)
-            Loop
-
-            stopwatch.Stop()
-
-            ' Failure checking
-            If (Not recvData) Or (janome.getStatus() <> "Running (moving)") Or (Not resultScrew) Then
-                monitorResult = False
-                PictureBox1.Image = Image.FromFile(picFailed(picindex))
+                Dim stopwatch As New Stopwatch()
+                stopwatch.Start()
+                recvData = False
+                PictureBox1.Image = Image.FromFile(picPassed(picindex))
                 PictureBox1.Refresh()
-                logger.Trace("Cannot receive Data in time limit/ Machine is not running normally/ Screwing failed")
-                Exit For
-            Else
-                monitorResult = True
-            End If
 
-        Next
+                Do While stopwatch.ElapsedMilliseconds < timeLimit
+
+                    Threading.Thread.Sleep(1000)
+                    janome.readSysIO()
+                    'janome.getStatus()
+                    response = screw.sendAndRecv("02 4D 31 45 03")
+
+                    If response.Length > 10 Then
+
+                        recvData = True
+                        returnPacket = screw.recvSmartScrewData(response)
+                        returnPacketScrew = returnPacket
+                        currentTime = DateTime.Now.TimeOfDay
+
+                        screw.dtResult.Rows.Add(i, currentTime, returnPacket(0), returnPacket(1), returnPacket(2), returnPacket(3), returnPacket(4),
+                                    returnPacket(5), returnPacket(6), returnPacket(7), returnPacket(8), returnPacket(9), returnPacket(10),
+                                    returnPacket(11))
+                        timestampLog("SmartScrew " + Str(i), True)
+                        logger.Trace("Count = " + CStr(screw.dtResult.Rows.Count))
+                        If screw.dtResult.Rows.Count Mod 2 = 1 Then 'screw feeding
+                            logger.Trace("Feeding")
+                            logger.Trace(returnPacket(8))
+                            If returnPacket(8) = "000" Then 'No error
+                                resultScrew = True
+                            Else
+                                logger.Trace("Screw feeding Error")
+                                resultScrew = False
+                            End If
+                        ElseIf screw.dtResult.Rows.Count Mod 2 = 0 Then 'screwing
+                            logger.Trace("Screwing")
+                            picindex = picindex + 1
+                            If returnPacket(11) = 1 Then 'Status is good for screwing
+                                resultScrew = True
+                            Else
+                                logger.Trace("Screwing result failed")
+                                resultScrew = False
+                            End If
+
+                        End If
+
+                        logger.Info("Picindex =" & picindex)
+                        PictureBox1.Image = Image.FromFile(picPassed(picindex))
+                        PictureBox1.Refresh()
+
+                        Exit Do
+                    Else
+                        logger.Trace("Cannot receive Data in small loop")
+                        recvData = False
+                    End If
+                    logger.Info("Picindex =" & picindex)
+                Loop
+
+                stopwatch.Stop()
+
+                ' Failure checking
+                If (Not recvData) Or (janome.getStatus() <> "Running (moving)") Or (Not resultScrew) Then
+                    monitorResult = False
+                    PictureBox1.Image = Image.FromFile(picFailed(picindex))
+                    PictureBox1.Refresh()
+                    logger.Trace("Cannot receive Data in time limit/ Machine is not running normally/ Screwing failed")
+                    Exit For
+                Else
+                    monitorResult = True
+                End If
+
+            Next
+
+        Catch ex As Exception
+            logger.Trace("Error :" & ex.Message)
+            resultScrew = False
+        End Try
 
         logger.Trace("Compelete receive Data loop")
+        logger.Trace("<== MonitorResult")
         Return monitorResult
 
     End Function
