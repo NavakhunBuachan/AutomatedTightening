@@ -1,8 +1,0 @@
-<!-- Import this file into your project to run the shared PreBuild event and target tasks -->
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">		
-  <!-- Run the PreBuildEvent script to set the version to the SVN revision -->
-  <PropertyGroup>
-    <PreBuildEvent>cd "$(ProjectDir)."
-cmd /c .BuildScripts\.PreBuildEvent.cmd "$(ProjectDir)."</PreBuildEvent>
-  </PropertyGroup>
-</Project>
