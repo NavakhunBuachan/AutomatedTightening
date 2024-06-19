@@ -13,7 +13,7 @@ Public Class mainForm
     Friend timeStamplogger As NLog.Logger = NLog.LogManager.GetLogger("TimeStamp")
     Friend snLogger As NLog.Logger = NLog.LogManager.GetLogger("TimeStampSn")
 
-    Public strSn, strUdbsPn, strEn, strJanomeJob, strScrewCount, strMesWipName As String
+    Public strSn, strUdbsPn, strEn, strJanomeJob, strScrewCount, strPresetNum, strTotalCount, strMesWipName As String
     Public returnPacketScrew, returnPacketDummy, picPassed, picFailed As String()
     Public strSnLogName As String
 
@@ -50,6 +50,12 @@ Public Class mainForm
         logger.Info("==> MESCheck")
         printOutput("MES Check: Checking MES status and Application configuration", Color.Orange)
 
+        If tbSn.Text = "torquecheck" Then
+            preparetorqueCheck()
+            Return
+
+        End If
+
         If checkTbInput() Then
             strSn = tbSn.Text
             strEn = tbEn.Text
@@ -83,6 +89,8 @@ Public Class mainForm
             printOutput("MES Check: Cannot communicate to Janome/SmartScrew", Color.Red)
             testData.dispose()
             Return
+        Else
+            setMinAngleAndScrewCount(My.Settings.normalMinAngle, My.Settings.normalTotalCount)
         End If
 
         logger.Debug("GetJob Janome :" + janome.getJobNum())
@@ -120,6 +128,11 @@ Public Class mainForm
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
         logger.Info("==> Start")
         logger.Info("CheckStatus before run")
+
+        If tbSn.Text = "torquecheck" Then
+            doTorqueCheck()
+            Return
+        End If
 
         If Not testData.initial(strSn, strEn, System.Net.Dns.GetHostName) Then
             testData.dispose()
@@ -251,6 +264,74 @@ Public Class mainForm
         System.Array.Sort(Of String)(picFailed)
 
 
+        Return True
+    End Function
+
+    Function preparetorqueCheck() As Boolean
+        logger.Info("==> prepare torque Check")
+
+        strJanomeJob = My.Settings.torqueCheckJobNum
+        'strScrewCount = My.Settings.torqueTotalCount
+        'strPresetNum = My.Settings.torqueCheckPresetNo
+
+        If Not checkMachinesConnected() Then
+            printOutput("Cannot communicate to Janome/SmartScrew", Color.Red)
+            testData.dispose()
+            Return False
+        End If
+
+        If janome.getJobNum() <> strJanomeJob Then
+            logger.Info("Set JobNum = " + strJanomeJob)
+            janome.setJobNum(strJanomeJob)
+
+        Else
+            logger.Info("Don't need to set job No.")
+        End If
+
+        setMinAngleAndScrewCount(My.Settings.torqueCheckMinAngle, My.Settings.torqueCheckTotalCount)
+
+        btnMESCheck.Enabled = False
+        btnMESCheck.BackColor = Color.Green
+        btnStart.Enabled = True
+        tbEn.Enabled = False
+        tbSn.Enabled = False
+        PictureBox1.Image = Image.FromFile(My.Application.Info.DirectoryPath + "\Picture\preparetorquecheck.png")
+        PictureBox1.SizeMode = PictureBoxSizeMode.Zoom
+        btnStart.Focus()
+        logger.Info("<== prepare torque Check")
+        Return True
+    End Function
+    Function setMinAngleAndScrewCount(minAngle As String, totalCount As String) As Boolean
+        Dim response As String
+        response = screw.setMinAngle(minAngle)
+        If screw.getMinAngle <> minAngle Then
+            logger.Error("Cannot set Min Angles")
+            Return False
+        End If
+
+        response = screw.setTotalCount(totalCount)
+        If screw.getTotalCount <> totalCount Then
+            logger.Error("Cannot set Total Count")
+            Return False
+        End If
+        Return True
+    End Function
+
+    Function doTorqueCheck() As Boolean
+
+        If Not janome.readyToStart() Then
+            printOutput("Please check the unit was loaded properly", Color.Red)
+            Return False
+        End If
+
+        printOutput("Machines is running", Color.Orange)
+
+        janome.startJob()
+
+        Dim torqueCheckform = New torqueCheck()
+        torqueCheckform.Show()
+
+        guiReset()
         Return True
     End Function
     Function checkJanomeWaitingRun(waitingTime As Integer) As Boolean
@@ -388,7 +469,7 @@ Public Class mainForm
                         returnPacketScrew = returnPacket
                         currentTime = DateTime.Now.TimeOfDay
 
-                        screw.dtResult.Rows.Add(i, currentTime, returnPacket(0), returnPacket(1), returnPacket(2), returnPacket(3), returnPacket(4),
+                        screw.dtResult.Rows.Add(i + 1, currentTime, returnPacket(0), returnPacket(1), returnPacket(2), returnPacket(3), returnPacket(4),
                                     returnPacket(5), returnPacket(6), returnPacket(7), returnPacket(8), returnPacket(9), returnPacket(10),
                                     returnPacket(11))
                         timestampLog("SmartScrew " + Str(i), True)
@@ -451,8 +532,6 @@ Public Class mainForm
         Return monitorResult
 
     End Function
-
-
     Private Function checkAndLoadConfig(pn As String, proc As String) As Boolean
 
         If Not config.checkProc(proc) Then
@@ -556,6 +635,57 @@ Public Class mainForm
 
         Return True
     End Function
+
+#End Region
+
+#Region "GUI"
+    Public Sub guiReset()
+
+        PictureBox1.Image = Image.FromFile(My.Application.Info.DirectoryPath + "\Picture\Initial.png")
+        PictureBox1.SizeMode = PictureBoxSizeMode.Zoom
+
+        lbOutput.BackColor = SystemColors.Control
+        lbOutput2.BackColor = SystemColors.Control
+        btnMESCheck.BackColor = SystemColors.Control
+        'btnLoadUnit.BackColor = SystemColors.Control
+        btnStart.BackColor = SystemColors.Control
+        btnFin.BackColor = SystemColors.Control
+
+        lbOutput.Text = ""
+        lbOutput2.Text = ""
+        tbSn.Text = ""
+        tbEn.Text = ""
+
+        tbSn.Enabled = True
+        tbEn.Enabled = True
+        btnMESCheck.Enabled = True
+        'btnLoadUnit.Enabled = False
+        btnStart.Enabled = False
+        btnFin.Enabled = False
+        btnFin.Visible = False
+        btnInit.Visible = False
+        btnInit.Enabled = False
+
+    End Sub
+    Public Sub printOutput(strIn1 As String, color As Color)
+        lbOutput.Text = strIn1
+        lbOutput2.Text = ""
+        lbOutput.BackColor = color
+        lbOutput.Refresh()
+        lbOutput2.BackColor = color
+        lbOutput2.Refresh()
+    End Sub
+    Public Sub printOutput(strIn1 As String, strIn2 As String, color As Color)
+        lbOutput.Text = strIn1
+        lbOutput2.Text = strIn2
+        lbOutput.BackColor = color
+        lbOutput2.BackColor = color
+        lbOutput.Refresh()
+        lbOutput2.Refresh()
+    End Sub
+#End Region
+
+#Region "Backup"
     Sub loggerTest()
 
         'testLogger.Factory.CreateNullLogger()
@@ -625,7 +755,6 @@ Public Class mainForm
         Dim t As String = ""
 
     End Sub
-
     'Private Sub btnLoadUnit_Click(sender As Object, e As EventArgs)
 
     '    logger.Info("CheckStatus before run")
@@ -644,56 +773,6 @@ Public Class mainForm
     '    End If
 
     'End Sub
-#End Region
-
-#Region "GUI"
-    Public Sub guiReset()
-
-        PictureBox1.Image = Image.FromFile(My.Application.Info.DirectoryPath + "\Picture\Initial.png")
-        PictureBox1.SizeMode = PictureBoxSizeMode.Zoom
-
-        lbOutput.BackColor = SystemColors.Control
-        lbOutput2.BackColor = SystemColors.Control
-        btnMESCheck.BackColor = SystemColors.Control
-        'btnLoadUnit.BackColor = SystemColors.Control
-        btnStart.BackColor = SystemColors.Control
-        btnFin.BackColor = SystemColors.Control
-
-        lbOutput.Text = ""
-        lbOutput2.Text = ""
-        tbSn.Text = ""
-        tbEn.Text = ""
-
-        tbSn.Enabled = True
-        tbEn.Enabled = True
-        btnMESCheck.Enabled = True
-        'btnLoadUnit.Enabled = False
-        btnStart.Enabled = False
-        btnFin.Enabled = False
-        btnFin.Visible = False
-        btnInit.Visible = False
-        btnInit.Enabled = False
-
-    End Sub
-    Public Sub printOutput(strIn1 As String, color As Color)
-        lbOutput.Text = strIn1
-        lbOutput2.Text = ""
-        lbOutput.BackColor = color
-        lbOutput.Refresh()
-        lbOutput2.BackColor = color
-        lbOutput2.Refresh()
-    End Sub
-    Public Sub printOutput(strIn1 As String, strIn2 As String, color As Color)
-        lbOutput.Text = strIn1
-        lbOutput2.Text = strIn2
-        lbOutput.BackColor = color
-        lbOutput2.BackColor = color
-        lbOutput.Refresh()
-        lbOutput2.Refresh()
-    End Sub
-#End Region
-
-#Region "Backup"
     Sub forTest()
         Dim temp As String = "\00\00\00\12\03\03k00000003000"
         Dim test As Integer = Math.Floor((2 + 1) / 2)

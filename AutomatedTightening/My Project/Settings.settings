@@ -17,5 +17,20 @@
     <Setting Name="NavaMesServer" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://patappmesprd03h.li.lumentuminc.net:125/CamInterfaceSvc.svc</Value>
     </Setting>
+    <Setting Name="torqueCheckTotalCount" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="normalTotalCount" Type="System.String" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="torqueCheckJobNum" Type="System.String" Scope="User">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="torqueCheckMinAngle" Type="System.String" Scope="User">
+      <Value Profile="(Default)">080</Value>
+    </Setting>
+    <Setting Name="normalMinAngle" Type="System.String" Scope="User">
+      <Value Profile="(Default)">120</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
