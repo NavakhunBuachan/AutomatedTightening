@@ -104,7 +104,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("http://patappmesprd03h.li.lumentuminc.net:125/CamInterfaceSvc.svc")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("http://patappmesprd03h.li.lumentuminc.net:128/CamInterfaceSvc.svc")>  _
         Public Property NavaMesServer() As String
             Get
                 Return CType(Me("NavaMesServer"),String)

@@ -147,7 +147,7 @@ Public Class mainForm
 
         unitLogInitial()
 
-        If Not testData.StartTest(testData.SerialNumber, testData.UDBSPartNumber) Then
+        If Not testData.StartTest(strEn, testData.UDBSPartNumber) Then
             printOutput("Cannot Start WIP", Color.Red)
             guiReset()
             Return

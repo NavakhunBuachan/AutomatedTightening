@@ -15,7 +15,7 @@
       <Value Profile="(Default)">38400</Value>
     </Setting>
     <Setting Name="NavaMesServer" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://patappmesprd03h.li.lumentuminc.net:125/CamInterfaceSvc.svc</Value>
+      <Value Profile="(Default)">http://patappmesprd03h.li.lumentuminc.net:128/CamInterfaceSvc.svc</Value>
     </Setting>
     <Setting Name="torqueCheckTotalCount" Type="System.String" Scope="User">
       <Value Profile="(Default)">5</Value>
